@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="netty demo" basedir="." default="build">
+
+	<target name="resolve" depends="init">
+		<ivy:retrieve pattern="${lib.dir}/[module]-[type]-[artifact]-[revision].[ext]" />
+	</target>
+
+	<target name="init">
+		<property name="lib.dir" location="${basedir}/lib" />
+		<property name="src.dir" location="${basedir}/src" />
+		<property name="generated.dir" location="${basedir}/generated" />
+		<property name="test.dir" location="${basedir}/test" />
+		<property name="classes.dir" location="${basedir}/classes" />
+		<property name="config.dir" location="${basedir}/resources" />
+		<!-- Code By Team illuminati STARTS -->
+		<property name="out.dir" value="${basedir}/build" />
+
+		<property name="jboss.home" value="/usr/share/jboss-as-7.1.1.Final/" />
+		<!-- Code By Team illuminati Ends -->
+		<path id="project.classpath">
+			<pathelement location="${classes.dir}" />
+			<!--pathelement location="${jboss.home}/bin/client/*.jar" /-->
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+			
+		</path>
+	</target>
+
+	<!-- jboss 7.1.1 final --> <!-- Code By Team illuminati STARTS -->
+	<property name="jboss.home" value="/usr/share/jboss-as-7.1.1.Final/" />
+	<property name="jboss.jars" value="${jboss.home}/modules" />
+	<property name="jboss.deploy" value="${jboss.home}/standalone/deployments" />
+	<path id="classpath711">
+		<pathelement location="${base.dir}/conf/log4j.properties" />
+		<pathelement location="${basedir}/lib/log4j-1.2.16.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/logmanager/log4j/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/logging/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/javax/transaction/api/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/javax/ejb/api/main/*.jar" />
+		<pathelement location="${jboss.home}/bin/client.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/marshalling/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/xnio/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/remoting3/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/xnio/nio/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/sasl/main/*.jar" />
+		<pathelement location="${jboss.home}/modules/org/jboss/marshalling/river/main/*.jar" />
+	</path> <!-- Code By Team illuminati Ends -->
+
+	<target name="clean" depends="init">
+		<delete dir="${classes.dir}" />
+		<echo>Note: protobuf generated .java are not removed. Changes to data.proto require build_pb.sh</echo>
+	</target>
+
+	 <target name="build" depends="clean">
+		<mkdir dir="${classes.dir}" />
+
+		<javac destdir="${classes.dir}" debug="true" deprecation="false" optimize="false" failonerror="true">
+			<src path="${generated.dir}" />
+			<classpath refid="project.classpath" />
+		</javac>
+
+		<javac destdir="${classes.dir}" debug="true" deprecation="false" optimize="false" failonerror="true">
+			<src path="${src.dir}" />
+			<classpath refid="project.classpath" />
+		</javac>
+	</target> 
+
+	<!-- Code By Team illuminati STARTS --><!-- - - - - - - - - - - - - - - - - -  
+          target: buildComm                      
+         - - - - - - - - - - - - - - - - - -->
+	<!--	<target name="buildComm" depends="clean">
+		<mkdir dir="${classes.dir}" />
+		<javac destdir="${classes.dir}" debug="true" deprecation="false" optimize="false" failonerror="true" includeantruntime="false">
+			<src path="${generated.dir}" />
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="build" depends="buildComm">
+
+		<javac destdir="${classes.dir}" debug="true" deprecation="false" optimize="false" failonerror="true" includeantruntime="false">
+			<src path="${src.dir}" />
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>--> <!-- Code By Team illuminati Ends -->
+
+	<target name="build.test" depends="build">
+		<javac destdir="${classes.dir}" debug="true" deprecation="false" optimize="false" failonerror="true">
+			<src path="${test.dir}" />
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<!-- ================================================================= -->
+
+	<target name="poke" depends="init">
+		<java fork="yes" classname="poke.demo.Jab">
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+
+	<target name="monitor" depends="init">
+		<java fork="yes" classname="poke.monitor.HeartMonitor">
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+
+	<target name="server" depends="build">
+		<java fork="yes" maxmemory="1024m" classname="poke.server.Server">
+			<arg value="${basedir}/runtime/server.conf" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+<!-- Code By Team illuminati STARTS -->
+	<target name="server1" depends="build">
+		<java fork="yes" maxmemory="1024m" classname="poke.server.Server">
+			<arg value="${basedir}/runtime/server1.conf" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+
+	<target name="server2" depends="build">
+		<java fork="yes" maxmemory="1024m" classname="poke.server.Server">
+			<arg value="${basedir}/runtime/server2.conf" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+	<target name="server3" depends="build">
+		<java fork="yes" maxmemory="1024m" classname="poke.server.Server">
+			<arg value="${basedir}/runtime/server3.conf" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+	<target name="userserver" depends="build">
+			<java fork="yes" maxmemory="1024m" classname="poke.server.Server">
+				<arg value="${basedir}/runtime/user.conf" />
+				<classpath refid="project.classpath" />
+			</java>
+	</target>
+
+	<!-- jboss 7.1.1 -->
+	<target name="demo7" depends="init">
+		<copy file="${basedir}/resources/log4j.properties" toDir="${classes.dir}" />
+		<copy file="${basedir}/resources/jboss-ejb-client.properties" toDir="${classes.dir}" />
+		<java classname="poke.ejb.client.Client">
+			<classpath>
+				<pathelement location="${classes.dir}" />
+				<pathelement location="${basedir}/lib/log4j-1.2.16.jar" />
+				<fileset dir="${jboss.jars}">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement location="${jboss.home}/bin/client.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="deploy" depends="clean,jar">
+		<copy file="${out.dir}/lifestream-svr.jar" toDir="${jboss.deploy}" />
+	</target>
+
+	<target name="jar" depends="build">
+		<!--mkdir dir="${out.dir}" /-->
+		<mkdir dir="${out.dir}/ejb-jar1/META-INF" />
+		<mkdir dir="${out.dir}/ejb-jar1/lib" />
+		<copy file="${basedir}/conf/persistence.xml" toDir="${out.dir}/ejb-jar1/META-INF" />
+
+		<copy toDir="${out.dir}/ejb-jar1">
+			<fileset dir="${classes.dir}">
+				<!--include name="poke/demo/**" /-->
+				<!--include name="poke/client/**" /-->
+				<!--include name="poke/debug/**" /-->
+				<!--include name="poke/monitor/**" /-->
+				<!--include name="poke/resources/**" /-->
+				<include name="poke/ejb/server/**" />
+				<include name="poke/server/jpa/**" />
+				<!-- include name="eye/**" /-->
+				<!--include name="${basedir}/conf/persistence.xml" /-->
+			</fileset>
+		</copy>
+
+		<jar destfile="${out.dir}/lifestream-svr.jar">
+			<fileset dir="${out.dir}/ejb-jar1">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+		<jar destfile="${out.dir}/lifestream-clt.jar">
+			<fileset dir="${classes.dir}">
+				<include name="**/client/Client.class" />
+				<include name="**/server/LifeStream.class" />
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="deploy2" depends="clean,jar2">
+			<copy file="${out.dir}/request-svr.jar" toDir="${jboss.deploy}" />
+		</target>
+
+		<target name="jar2" depends="build">
+
+			<copy toDir="${out.dir}/ejb-jar1">
+				<fileset dir="${classes.dir}">
+					<include name="poke/ejb/server/Request.class" />
+					<include name="poke/demo/**" />
+				</fileset>
+			</copy>
+
+			<jar destfile="${out.dir}/request-svr.jar">
+				<fileset dir="${out.dir}/ejb-jar1">
+					<include name="**/*" />
+				</fileset>
+			</jar>
+		</target>
+
+	<target name="wardeploy">
+	<copy file="${war.path}" todir="${jboss.home}/standalone/deployments"/>
+		<delete file="${jboss.deployments.dir}/${war.filename}.war.deployed"/>
+		<touch file="${jboss.deployments.dir}/${war.filename}.war.dodeploy"/>
+		<property name="war.filename" value="mywar" />
+		<property name="war.path" value="dir/mywar.war" />
+		<property name="jboss.deployments.dir" value="${jboss.home}/standalone/deployments" />
+	</target>
+	<!-- Code By Team illuminati Ends -->
+</project>

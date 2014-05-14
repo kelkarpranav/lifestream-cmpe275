@@ -1,0 +1,13 @@
+// By Pranav
+
+message Image {
+  required bytes imagedata = 1;
+  
+ 
+  }
+
+message LifeStream {
+  repeated Image image = 1;
+}
+
+
